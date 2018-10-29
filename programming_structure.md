@@ -10,11 +10,13 @@ ArrayParser
 6. 복잡한 코드의 함수나구기 연습
 
 #### 요구사항(Step4)
-- 숫자타입이외에 string, boolean, null 타입도 지원하도록 구현한다.
-- 올바른 문자열이 아닌 경우 오류를 발생한다.
-- 타입체크를 정규표현식을 사용하는 경우, backreference를 활용하는 것을 추천.
-- 복잡한 세부로직은 함수로 분리해본다.
-- 중복된 코드역시 함수로 분리해서 일반화한다.
+- Object 타입 ( { key: value} ) 도 지원한다.
+- 배열안에 object, object안에 배열이 자유롭게 포함될 수 있다.
+- 지금까지의 코드를 리팩토링한다.
+    - 복잡한 세부로직은 반드시 함수로 분리해본다.
+    - 최대한 작은 단위의 함수로 만든다.
+    - 중복된 코드역시 함수로 분리해서 일반화한다.
+    - 객체형태의 class로 만든다.
 
 #### 설계
 **arrayParser:** 문자열을 파싱해 데이터 구조를 형성
@@ -23,7 +25,7 @@ ArrayParser
 - tokenizer -> lexer -> parser의 순서로 문자열 파싱
 
     1. **tokenizer**
-        - 인자로 들어오는 문자열을 의미있는 유닛단위로 배열에 담는다.(여기서는 '[', ']', comma 단위로 나누었다.)
+        - 인자로 들어오는 문자열을 의미있는 유닛단위로 배열에 담는다.(여기서는 '[', ']', comma단위로 나누었다.)
         - 새로 생성된 배열 반환(tokens)
 
     2. **lexer**
@@ -35,6 +37,7 @@ ArrayParser
         - lexer에 의해 type이 정해진 값들의 배열을 받아 데이터를 구조화한다.
         - '[' : array 생성
         - ']' : stack에 저장되어있던 가장 최상위 값 반환 및 이전에 생성된 array의 child 배열에 push된다.
+        - ':' : ':'이 포함된 string은 'keyString' 값으로 저장된다.
         - ...rest: string, number, boolean, null 등 type에 상관없이 stack 최상위 array의 child 배열에 push된다.
 
 - 결과

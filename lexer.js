@@ -1,8 +1,4 @@
-// const str = "['1a3',[null,false,['11',[112233],{easy : ['hello', {a:'a'}, 'world']},112],55, '99'],{a:'str', b:[912,[5656,33],{key : 'innervalue', newkeys: [1,2,3,4,5]}]}, true]"
-// const Tokenizer = require("./tokenizer.js");
-// const tokens = tokenizer.run(str);
-
-module.exports = function lexer(tokens) {
+function lexer(tokens) {
     const lexemes = [];
 
     for (let token of tokens) {
@@ -14,13 +10,13 @@ module.exports = function lexer(tokens) {
 
 class Lexeme {
     constructor(token) {
-        this.type = this.getType(token);
-        this.value = this.getValue(this.type, token);
+        this.type = Lexeme.getType(token);
+        this.value = Lexeme.getValue(this.type, token);
     }
 
-    getType(token) {
+    static getType(token) {
         const typeCheck = new TypeCheck;
-        const error = new Error;
+        const typeError = new TypeError;
 
         if (typeCheck.isArray(token)) return 'array';
         if (typeCheck.isArrayClose(token)) return 'arrayClose';
@@ -32,13 +28,13 @@ class Lexeme {
         if (typeCheck.isBoolean(token)) return 'boolean';
         if (typeCheck.isNull(token)) return 'null';
 
-        return error.throw(token);
+        return typeError.throw(token);
     }
 
-    getValue(type, token) {
+    static getValue(type, token) {
         if (type === 'array') return 'ArrayObject';
         if (type === 'number') return Number(token);
-        if (type === 'string') return token;
+        if (type === 'string') return token.substring(1, token.length - 1)
         if (type === 'arrayClose') return 'close';
         if (type === 'object') return 'Object';
         if (type === 'objectClose') return 'close';
@@ -87,14 +83,10 @@ class TypeCheck {
     }
 }
 
-class Error {
+module.exports = { lexer, Lexeme, TypeCheck };
+
+class TypeError {
     throw(token) {
         throw `${token}은 올바른 타입이 아닙니다.`;
     }
 }
-
-// const str = "['1a3',[null,false,['11',[112233],{easy : ['hello', {a:'a'}, 'world']},112],55, '99'],{a:'str', b:[912,[5656,33],{key : 'innervalue', newkeys: [1,2,3,4,5]}]}, true]"
-// const Tokenizer = require("./tokenizer.js");
-// const tokenizer = new Tokenizer;
-// const tokens = tokenizer.run(str);
-// console.log(lexer(tokens));

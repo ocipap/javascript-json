@@ -1,4 +1,4 @@
-module.exports = class Stack {
+exports.Stack = class {
     constructor() {
         this.top = null;
         this.count = 0;

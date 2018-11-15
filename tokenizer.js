@@ -1,4 +1,4 @@
-module.exports = class Tokenizer {
+exports.Tokenizer = class {
     constructor() {
         this.tokenList = [];
         this.token = '';
@@ -11,7 +11,7 @@ module.exports = class Tokenizer {
         this.bValueAvailable = false;
         this.type;
         this.stateList = [];
-        this.error = new Error;
+        this.syntaxError = new SyntaxError;
     }
 
     push(token) {
@@ -41,7 +41,7 @@ module.exports = class Tokenizer {
 
             ':'() {
                 if (!this.token.trim()) {
-                    this.error.throwNotDefinedKey();
+                    this.syntaxError.throwNotDefinedKey();
                 }
                 else {
                     this.key = this.token.trim();
@@ -51,7 +51,7 @@ module.exports = class Tokenizer {
             },
 
             ','() {
-                if (!this.token.trim()) this.error.throwWrongComma();
+                if (!this.token.trim()) this.syntaxError.throwWrongComma();
 
                 const currentState = this.stateList[this.stateList.length - 1];
                 if (currentState === 'object' && this.bValueAvailable) {
@@ -61,16 +61,16 @@ module.exports = class Tokenizer {
             },
 
             ']'() {
-                if (!this.arrayStack) this.error.throwWrongArray();
+                if (!this.arrayStack) this.syntaxError.throwWrongArray();
 
                 this.arrayStack--;
                 this.stateList.pop();
             },
 
             '}'() {
-                if (!this.objectStack) this.error.throwWrongObject();
-                if (this.bKeyAvailable && this.token.trim()) this.error.throwMissingColon();
-                if (this.bValueAvailable && !this.token.trim()) this.error.throwNotDefinedValue(this.key);
+                if (!this.objectStack) this.syntaxError.throwWrongObject();
+                if (this.bKeyAvailable && this.token.trim()) this.syntaxError.throwMissingColon();
+                if (this.bValueAvailable && !this.token.trim()) this.syntaxError.throwNotDefinedValue(this.key);
 
                 this.objectStack--;
                 this.stateList.pop();
@@ -96,7 +96,7 @@ module.exports = class Tokenizer {
                 this.initToken();
             }
             else if (char.match(/,|\]|\}/)) {
-                if (this.bStr && this.bStrOpen) this.error.throwWrongString(this.token);
+                if (this.bStr && this.bStrOpen) this.syntaxError.throwWrongString(this.token);
 
                 this.processByType(char);
 
@@ -107,16 +107,16 @@ module.exports = class Tokenizer {
             }
             else {
                 if (char === "'") this.bStrOpen = true;
-                if (this.bStr && this.bStrOpen) this.error.throwWrongString(this.token);
+                if (this.bStr && this.bStrOpen) this.syntaxError.throwWrongString(this.token);
 
                 this.concat(this.token, char);
             }
         }
 
         //error 검출
-        if (this.bStrOpen) this.error.throwWrongString(this.token);
-        if (this.objectStack) this.error.throwWrongObject();
-        if (this.arrayStack) this.error.throwWrongArray();
+        if (this.bStrOpen) this.syntaxError.throwWrongString(this.token);
+        if (this.objectStack) this.syntaxError.throwWrongObject();
+        if (this.arrayStack) this.syntaxError.throwWrongArray();
 
         if (this.token) this.push(this.token);
 
@@ -125,7 +125,7 @@ module.exports = class Tokenizer {
     }
 }
 
-class Error {
+class SyntaxError {
     throwWrongString(string) {
         throw `${string}은 올바른 문자열이 아닙니다.`;
     }

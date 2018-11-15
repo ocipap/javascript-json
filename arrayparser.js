@@ -1,6 +1,6 @@
-const Stack = require("./stack.js");
-const Tokenizer = require("./tokenizer.js");
-const lexer = require("./lexer.js");
+const { Stack } = require("./stack.js");
+const { Tokenizer } = require("./tokenizer.js");
+const { lexer } = require("./lexer.js");
 
 class Data {
   constructor(type, value, child) {
@@ -40,6 +40,7 @@ function arrayParser(str) {
   return parsedData;
 };
 
+exports.arrayParser = arrayParser;
 /*
 Test Case
 */

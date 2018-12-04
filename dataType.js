@@ -10,7 +10,7 @@ class DataType{
         return 'string';
     }
     isString(value){
-        return value.includes("'") | value.includes('"');
+        return !!(value.includes("'") | value.includes('"'));
     }
     isBoolean(value){
         return value === 'true' || value === 'false';
@@ -19,7 +19,7 @@ class DataType{
         return value === 'null';
     }
     isNumber(value){
-        return value.match(/^[0-9]*$/);
+        return !!(value.match(/^[0-9]*$/));
     }
     findClosingError(data){
         this.error.validateClosing(data);

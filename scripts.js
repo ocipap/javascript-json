@@ -68,6 +68,7 @@ class Parser{
   }
   setBracketValue({curr, parent, input, strStatus}){
     if(parent && parent.parent && input === ']' || input === '}'){
+      console.log(curr);
       if(input === '}') this.dataType.findColonError(curr);
       parent = parent.parent;
       curr = parent.child;

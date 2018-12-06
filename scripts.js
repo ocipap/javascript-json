@@ -16,7 +16,7 @@ class Type {
     }
   }
 };
-class _Array {
+class ArrParser {
   constructor() {
     this.stack = new Stack;
     this.type = new Type;
@@ -58,10 +58,11 @@ class _Array {
     return [];
   };
   checkBracket(str) {
-    let wrongArrBracket = str.match(/\[|\]/g).length % 2;
-    if (wrongArrBracket) throw new Error('제대로 종료되지 않은 배열이 있습니다!(대괄호의 갯수가 맞지 않아요)');
-    let wrongObjBracket = str.match(/\{|\}/g).length % 2;
-    if (wrongObjBracket) throw new Error('제대로 종료되지 않은 객체가 있습니다!(중괄호의 갯수가 맞지 않아요)');
+    let wrongArrBracket = str.match(/\[|\]/g);
+    if (wrongArrBracket.length % 2) throw new Error('제대로 종료되지 않은 배열이 있습니다!(대괄호의 갯수가 맞지 않아요)');
+    let wrongObjBracket = str.match(/\{|\}/g);
+    if (wrongArrBracket.length % 2 && wrongObjBracket.length % 2) throw new Error('제대로 종료되지 않은 객체가 있습니다!(중괄호의 갯수가 맞지 않아요)');
+    return false;
   }
   initializeStack() {
     this.stack = new Stack;
@@ -77,7 +78,7 @@ class _Array {
       if (this.checkQuote(v)) return true;
       if (this.checkNaN(v)) return true;
     })
-    return result ? true : false;
+    return !!result;
   };
   checkQuote(val) {
     if (val.match(/'|"/g) !== null && val.match(/'|"/g).length % 2 !== 0) {
@@ -140,8 +141,9 @@ class _Array {
     }
     return result;
   }
-  checkKeyType(key){
-    if(key.match(/\[|\{|\]|\}/g)) throw new Error('key 값에 허용되지 않는 값이 있습니다.');
+  checkKeyType(key) {
+    if (key.match(/\[|\{|\]|\}/g)) throw new Error('key 값에 허용되지 않는 값이 있습니다.');
+    return true;
   };
   tokenize(str) {
     let result = this.each(str, this.checkToken.bind(this));
@@ -196,7 +198,10 @@ class _Array {
     return bool.includes(val);
   };
 };
-let str = '[ "a" , {a : ["1a3", {b : "2as3"}], c : "str"}, [1, [2, [{d : null}], 4], 5], 6]';
-let _array = new _Array();
+
+module.exports = { ArrParser, Type, Stack };
+
+let str = '[1,2,3]';
+let _array = new ArrParser();
 let result = _array.parser(str);
-console.log(JSON.stringify(result, null, 2));
+// console.log(JSON.stringify(result, null, 2));

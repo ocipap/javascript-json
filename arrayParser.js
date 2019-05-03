@@ -2,9 +2,9 @@ const util = require('./util')
 const it = util.it
 
 const separator = {
-    "arrayOpen" : "[",
-    "comma" : ",",
-    "arrayClose" : "]"
+    "arrayOpen": "[",
+    "comma": ",",
+    "arrayClose": "]"
 }
 
 const isSeparator = (s) => util.inArray(s, Object.values(separator))
@@ -18,7 +18,7 @@ const literalValidator = () => {
 const typedLiteral = (s) => {
     const literalChecker = util.checker.apply(null, literalValidator())
     const type = literalChecker(s)
-    if(!type) throw "지원하지 않는 타입"
+    if (!type) throw Error("지원하지 않는 타입")
     const typed = {
         type,
         value: s,
@@ -63,17 +63,42 @@ const lexer = (tokenizedArr) => {
 }
 
 const parser = (laxeredArr) => {
-    
+    const parsedObj = {
+        type: "",
+        child: []
+    }
+    const rootNode = laxeredArr.shift()
+    if (rootNode.type == "arrayOpen") {
+        parsedObj.type = "array"
+    }
+    laxeredArr.forEach(el => {
+        if (util.equals(el.type, "arrayOpen")){
+            // 6-2를 위한 코드
+        }
+        else if(util.equals(el.type, "arrayClose")){
+            // 6-2를 위한 코드
+        }
+        else {
+            parsedObj.child.push(el)
+        }
+        
+    });
+    return parsedObj
 }
 
 const arrayParser = (jsonString) => {
-    console.log(
-        util.go(
+    try {
+        return util.go(
             jsonString,
             tokenizer,
             lexer,
+            parser
         )
-    )
+    } catch (e) {
+        console.log(e.message)
+    }
 }
 
-arrayParser("[123, 13, 10]")
+const str = "[123, 22, 33]"
+const result = arrayParser(str)
+console.log(JSON.stringify(result, null, 2))

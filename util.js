@@ -18,6 +18,13 @@ const filter = curry((f, iter) => {
     return res
 })
 
+const findOne = (f, iter) => {
+    for (let a of iter) {
+        if(f(a)) return a
+    }
+    return undefined
+}
+
 const inArray = (s, iter) => {
     for (let a of iter) {
         if (s === a) {
@@ -40,10 +47,36 @@ const reduce = (f, acc, iter) => {
 
 const go = (...args) => reduce((a, f) => f(a), args)
 
+const it = {
+    isNumber: (s) => {
+        s = Number(s)
+        return typeof s === "number" && isFinite(s) && Math.floor(s) === s
+    },
+}
+
+const checker = (...func) => {
+    return v => {
+        const current = findOne(f => f(v), func)
+        return current ? current.type : current
+    }
+}
+
+const validator = (type, fun) => {
+    const f = (args) => fun(args)
+    f["type"] = type
+    return f
+}
+
+const equals = (v1, v2) => v1 === v2
 module.exports = {
     map,
     filter,
     inArray,
     reduce,
-    go
+    go,
+    equals,
+    findOne,
+    it,
+    checker,
+    validator
 }

@@ -47,6 +47,8 @@ const reduce = (f, acc, iter) => {
 
 const go = (...args) => reduce((a, f) => f(a), args)
 
+const pipe = (...func) => (val) => go(val, ...func)
+
 const it = {
     isNumber: (s) => {
         s = Number(s)
@@ -89,6 +91,7 @@ module.exports = {
     inArray,
     reduce,
     go,
+    pipe,
     equals,
     findOne,
     it,

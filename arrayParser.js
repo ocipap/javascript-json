@@ -1,5 +1,6 @@
 const util = require('./util')
 const it = util.it
+const L = util.L
 
 const separator = {
     "arrayOpen": "[",

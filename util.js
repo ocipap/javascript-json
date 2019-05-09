@@ -68,6 +68,21 @@ const validator = (type, fun) => {
 }
 
 const equals = (v1, v2) => v1 === v2
+
+const L = {}
+
+L.map = curry(function*(f, iter){
+    for(const a of iter){
+        yield f(a)
+    }
+})
+
+L.filter = curry(function*(f, iter) {
+    for(const a of iter) {
+        if(f(a)) yield a
+    }
+})
+
 module.exports = {
     map,
     filter,
@@ -78,5 +93,6 @@ module.exports = {
     findOne,
     it,
     checker,
-    validator
+    validator,
+    L
 }

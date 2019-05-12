@@ -13,28 +13,25 @@ const isSeparator = (s) => util.inArray(s, Object.values(separator))
 const literalValidator = () => {
     let validators = []
     validators.push(util.validator("number", it.isNumber))
+    validators.push(util.validator("null", it.isNull))
+    validators.push(util.validator("boolean", it.isBoolean))
+    validators.push(util.validator("string", it.isString))
     return validators
 }
 
+const literalChecker = util.checker.apply(null, literalValidator())
+
+const seperatorChecker = s => util.findOne(([k, v]) => v === s, Object.entries(separator))
+
 const typedLiteral = (s) => {
-    const literalChecker = util.checker.apply(null, literalValidator())
     const type = literalChecker(s)
-    if (!type) throw Error("지원하지 않는 타입")
-    const typed = {
-        type,
-        value: s,
-        child: [],
-    }
+    const typed = { type, value: s, child: [] }
     return typed
 }
 
 const typedSeperator = (s) => {
-    const [type, value] = util.findOne(([k, v]) => v === s, Object.entries(separator))
-    const typed = {
-        type,
-        value,
-        child: []
-    }
+    const [type, value] = seperatorChecker(s)
+    const typed = { type, value, child: [] }
     return typed
 }
 
@@ -55,51 +52,36 @@ const tokenizer = (text) => {
     return tokenizedArr
 }
 
-const lexer = (tokenizedArr) => {
-    return util.go(
-        tokenizedArr,
-        util.map(s => s.trim()),
-        util.map(s => isSeparator(s) ? typedSeperator(s) : typedLiteral(s))
-    )
-}
+const lexer =   util.pipe(
+                    L.map(s => s.trim()),
+                    
+                    util.map(s => isSeparator(s) ? typedSeperator(s) : typedLiteral(s))
+                )
 
-const parser = (laxeredArr) => {
-    const parsedObj = {
-        type: "",
-        child: []
-    }
-    const rootNode = laxeredArr.shift()
-    if (rootNode.type == "arrayOpen") {
-        parsedObj.type = "array"
-    }
-    laxeredArr.forEach(el => {
-        if (util.equals(el.type, "arrayOpen")){
-            // 6-2를 위한 코드
+const parser = laxeredArr => {
+    let parsedArr = []
+    while(laxeredArr.length) {
+        let token = laxeredArr.shift()
+        if (util.equals(token.type, "arrayOpen")){
+            parsedArr.push({ type: "", child: parser(laxeredArr) })
         }
-        else if(util.equals(el.type, "arrayClose")){
-            // 6-2를 위한 코드
+        else if(util.equals(token.type, "arrayClose")){
+            return parsedArr
         }
         else {
-            parsedObj.child.push(el)
+            parsedArr.push(token)
         }
-        
-    });
-    return parsedObj
-}
-
-const arrayParser = (jsonString) => {
-    try {
-        return util.go(
-            jsonString,
-            tokenizer,
-            lexer,
-            parser
-        )
-    } catch (e) {
-        console.log(e.message)
     }
+    return parsedArr
 }
 
-const str = "[123, 22, 33]"
+const arrayParser = util.pipe(
+                        tokenizer,
+                        lexer,
+                        parser
+                    )
+
+
+const str = "[123, 22, 33, 'asas',[[[123, 123, null, true]]"
 const result = arrayParser(str)
 console.log(JSON.stringify(result, null, 2))

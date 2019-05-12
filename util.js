@@ -50,10 +50,19 @@ const go = (...args) => reduce((a, f) => f(a), args)
 const pipe = (...func) => (val) => go(val, ...func)
 
 const it = {
-    isNumber: (s) => {
+    isNumber: s => {
         s = Number(s)
         return typeof s === "number" && isFinite(s) && Math.floor(s) === s
     },
+    isNull: s => {
+        return s === "null"
+    },
+    isBoolean: s => {
+        return ["false", "true"].some(v => v === s)
+    },
+    isString: s => {
+        return typeof s === "string"
+    }
 }
 
 const checker = (...func) => {

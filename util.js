@@ -2,6 +2,10 @@ const curry = (f) => {
     return (a, b) => b !== undefined ? f(a, b) : b => f(a, b)
 }
 
+function *infinity(i = 0) {
+    while(1) yield i++
+}
+
 const map = curry((f, iter) => {
     let res = []
     for (let a of iter) {
@@ -48,6 +52,20 @@ const reduce = (f, acc, iter) => {
 const go = (...args) => reduce((a, f) => f(a), args)
 
 const pipe = (...func) => (val) => go(val, ...func)
+
+const take = curry((l, iter) => {
+    let res = []
+    iter = iter[Symbol.iterator]()
+    let cur
+    while(!(cur= iter.next()).done) {
+        const a = cur.value
+        res.push(a)
+        if(res.length == l) return res
+    }
+    return res
+})
+
+const takeAll = take(Infinity)
 
 const it = {
     isNumber: s => {
@@ -101,6 +119,8 @@ module.exports = {
     reduce,
     go,
     pipe,
+    take,
+    takeAll,
     equals,
     findOne,
     it,

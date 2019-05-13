@@ -79,20 +79,26 @@ const it = {
         return ["false", "true"].some(v => v === s)
     },
     isString: s => {
-        return typeof s === "string"
+        return typeof s === "string" && s.startsWith("'") && s.endsWith("'")
     }
 }
 
 const checker = (...func) => {
     return v => {
         const current = findOne(f => f(v), func)
-        return current ? current.type : current
+        return current
     }
 }
 
 const validator = (type, fun) => {
     const f = (args) => fun(args)
     f["type"] = type
+    return f
+}
+
+const errorValidator = (e, fun) => {
+    const f = args => fun(args)
+    f["error"] = e
     return f
 }
 
@@ -126,5 +132,6 @@ module.exports = {
     it,
     checker,
     validator,
+    errorValidator,
     L
 }

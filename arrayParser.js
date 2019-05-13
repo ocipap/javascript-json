@@ -54,8 +54,9 @@ const tokenizer = (text) => {
 
 const lexer =   util.pipe(
                     L.map(s => s.trim()),
-                    
-                    util.map(s => isSeparator(s) ? typedSeperator(s) : typedLiteral(s))
+                    laxerChecker,
+                    L.map(s => isSeparator(s) ? typedSeperator(s) : typedLiteral(s)),
+                    util.takeAll
                 )
 
 const parser = laxeredArr => {
@@ -82,6 +83,6 @@ const arrayParser = util.pipe(
                     )
 
 
-const str = "[123, 22, 33, 'asas',[[[123, 123, null, true]]"
+const str = "[123, 22, 33, 'asas',[123, 123, null, true]]"
 const result = arrayParser(str)
 console.log(JSON.stringify(result, null, 2))

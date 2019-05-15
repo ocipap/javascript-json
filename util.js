@@ -65,7 +65,7 @@ const take = curry((l, iter) => {
     return res
 })
 
-const takeAll = take(Infinity)
+const takeAll = take(infinity)
 
 const it = {
     isNumber: s => {

@@ -33,9 +33,22 @@ const take = curry((l, iter) => {
     return res
 })
 
+const checker = (...func) => {
+    return s => {
+        for(const f of func) {
+            if(f(s)) return true
+        }
+        return false
+    } 
+}
+
 const takeAll = take(infinity)
 
 const findOne = curry((f, iter) => go(L.filter(f, iter), take(1)))
+
+const last = arr => arr[arr.length - 1]
+
+const head = arr => arr[0]
 
 const L = {}
 
@@ -67,6 +80,9 @@ module.exports = {
     take,
     takeAll,
     findOne,
+    checker,
+    head,
+    last,
     L
 }
 

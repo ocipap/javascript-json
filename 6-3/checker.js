@@ -11,6 +11,16 @@ const isString = c => /['][a-z0-9]*[']|["][a-z0-9]*["]/.test(c)
 const toBoolean = text => text === "true" ? true : false
 const toNumber = text => Number(text)
 const toNull = _ => null
+isLBracket.type = "LBracket"
+isRBracket.type = "RBracket"
+isLBrace.type = "LBrace"
+isRBrace.type = "RBrace"
+isComma.type = "Comma"
+isColon.type = "Colon"
+isNull.type = "null"
+isBoolean.type = "boolean"
+isNumber.type = "number"
+isString.type = "string"
 
 const c = {
     isLBracket,

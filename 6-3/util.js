@@ -5,6 +5,10 @@ function *infinity(i = 0) {
     while(1) yield i++
 }
 
+const identity = v => v
+
+const nagate = f => v => !f(v)
+
 const reduce = curry((f, acc, iter) => {
     if(!iter) {
         iter = acc[Symbol.iterator]()
@@ -24,6 +28,8 @@ const map = curry((f, iter) => go(L.map(f, iter), takeAll))
 
 const filter = curry((f, iter) => go(L.filter(f, iter), takeAll))
 
+const reject = curry((f, iter) => go(L.filter(nagate(f), iter), takeAll))
+
 const take = curry((l, iter) => {
     let res = []
     for(const a of iter) {
@@ -42,6 +48,12 @@ const checker = (...func) => {
     } 
 }
 
+const keys = obj => go(L.keys(obj), takeAll)
+
+const values = obj => go(L.values(obj), takeAll)
+
+const entries = obj => go(L.entries(obj), takeAll)
+
 const takeAll = take(infinity)
 
 const findOne = curry((f, iter) => go(L.filter(f, iter), take(1)))
@@ -49,6 +61,14 @@ const findOne = curry((f, iter) => go(L.filter(f, iter), take(1)))
 const last = arr => arr[arr.length - 1]
 
 const head = arr => arr[0]
+
+const counts = (text, s) => {
+    let count = 0
+    for(const a of text) {
+        if(a === s) count++
+    }
+    return count
+}
 
 const L = {}
 
@@ -71,18 +91,33 @@ L.entries = function *(obj) {
     for(const k in obj) yield [k, obj[k]]
 }
 
+L.keys = function *(obj) {
+    for(const k in obj) yield k
+}
+
+L.values = function *(obj) {
+    for(const k in obj) yield obj[k]
+}
+
+
+
 module.exports = {
     reduce,
     map,
     filter,
+    reject,
     pipe,
     go,
+    keys,
+    values,
+    entries,
     take,
     takeAll,
     findOne,
     checker,
     head,
     last,
+    counts,
     L
 }
 

@@ -34,20 +34,20 @@ class Left extends Either {
         throw new TypeError("Left(a) 값을 가져올 수 없습니다.")
     }
 
-    getOrElse (other) {
-        return other
+    getOrElse (f) {
+        return f(this._value)
     }
 
     orElse(f) {
         return f(this._value)
     }
 
-    chain(f) {
+    chain(_) {
         return this
     }
 
-    getOrElseThrow(a) {
-        throw new Error(a)
+    getOrElseThrow(_) {
+        throw new Error(this._value)
     }
 
     filter(f) {
@@ -64,11 +64,11 @@ class Right extends Either {
         return Either.of(f(this._value))
     }
 
-    getOrElse(other) {
+    getOrElse(_) {
         return this._value
     }
 
-    orElse() {
+    orElse(_) {
         return this
     }
 
@@ -88,3 +88,5 @@ class Right extends Either {
         return `Either.Right(${this._value})`
     }
 }
+
+module.exports = Either

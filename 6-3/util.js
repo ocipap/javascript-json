@@ -9,7 +9,7 @@ const identity = v => v
 
 const nagate = f => v => !f(v)
 
-const reduce = curry((f, acc, iter) => {
+const reduce = function (f, acc, iter) {
     if(!iter) {
         iter = acc[Symbol.iterator]()
         acc = iter.next().value
@@ -18,13 +18,15 @@ const reduce = curry((f, acc, iter) => {
         acc = f(acc, a)
     }
     return acc
-})
+}
 
 const go = (...args) => reduce((a, f) => f(a), args)
 
 const pipe = (f, ...fs) => (...args) => go(f(...args), ...fs)
 
 const map = curry((f, iter) => go(L.map(f, iter), takeAll))
+
+const pluck = curry((key, iter) => map(obj => obj[key], iter))
 
 const filter = curry((f, iter) => go(L.filter(f, iter), takeAll))
 
@@ -104,6 +106,7 @@ L.values = function *(obj) {
 module.exports = {
     reduce,
     map,
+    pluck,
     filter,
     reject,
     pipe,
@@ -120,5 +123,3 @@ module.exports = {
     counts,
     L
 }
-
-

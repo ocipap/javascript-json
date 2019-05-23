@@ -66,7 +66,7 @@ const parserHelper = (arr) => {
     let iter = arr[Symbol.iterator]()
     let firstCur = iter.next().value
 
-    return Either.right((function recur(parent, type) {
+    return Either.right((function recur(parent, t) {
         let cur = iter.next().value
 
         if (cur.type === "RBracket" || cur.type === "RBrace") return parent
@@ -76,35 +76,31 @@ const parserHelper = (arr) => {
                 type: cur.type,
                 child: []
             }, cur.type))
-            return recur(parent, type)
+            return recur(parent, t)
+        } else if (t === "array") {
+            parent.child.push(cur)
+            return recur(parent, t);
         } else {
-            if (type === "array") {
-                parent.child.push(cur)
-            } else {
-                let key = cur.value
-                let colon = iter.next().value
-                let value = iter.next().value
-                let type = value.type
+            let key = cur.value
+            let colon = iter.next().value
+            let value = iter.next().value
+            let type = value.type
 
-                if (type === "array" || type === "object") {
-                    value = recur({
-                        type,
-                        child: []
-                    }, type)
-                } else {
-                    value = value.value
-                }
-
-                parent.child.push({
-                    key,
+            if (type === "array" || type === "object") {
+                value = recur({
                     type,
-                    value
-                })
+                    child: []
+                }, type)
+            } else {
+                value = value.value
             }
-
-            return recur(parent, type);
+            parent.child.push({
+                key,
+                type,
+                value
+            })
+            return recur(parent, t);
         }
-
     })({
         type: firstCur.type,
         child: []
@@ -162,9 +158,7 @@ const ArrayParser = _.pipe(
 )
 
 try {
-    const str1 = "[123, 1234, [1, 2]]"
     const str = "['1a3',[null,false,['11',[112233],{'easy' : ['hello', 'world']},112],55, '99'],{'a':'str', 'b':[912,[5656,33],{'key' : 'innervalue', 'newkeys': [1,2,3,4,5]}]}, true]";
-    const test = "[]"
     const result = ArrayParser(str);
     console.log(JSON.stringify(result, null, 2));
 } catch (e) {

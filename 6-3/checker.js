@@ -12,9 +12,9 @@ const toBoolean = text => text === "true" ? true : false
 const toNumber = text => Number(text)
 const toNull = _ => null
 const toString = text => text.slice(1, text.length-1)
-isLBracket.type = "LBracket"
+isLBracket.type = "array"
 isRBracket.type = "RBracket"
-isLBrace.type = "LBrace"
+isLBrace.type = "object"
 isRBrace.type = "RBrace"
 isComma.type = "Comma"
 isColon.type = "Colon"

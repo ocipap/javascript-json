@@ -86,7 +86,10 @@ const it = {
 const checker = (...func) => {
     return v => {
         const current = findOne(f => f(v), func)
+
         return current !== undefined ? true : false
+
+
     }
 }
 
